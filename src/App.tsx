@@ -1,25 +1,58 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { Box, Button, Container, Input } from "@chakra-ui/react";
 
 function App() {
+  const [file, setFile] = useState<File[]>([]);
+  const [previewImage, setPreviewImage] = useState<string[]>([]);
+  const inputImageRef = useRef<any>(null)
+
+  const openFileDialog = () => {
+    inputImageRef.current && inputImageRef.current.click()
+  }
+
+  const loadImage = ({ target }: ChangeEvent<HTMLInputElement>) => {
+    const { files } = target;
+    if (!files?.length) return;
+
+    const fieListToArray = [...Array.from(files!)]
+    setFile(fieListToArray)
+  }
+
+
+  useEffect(() => {
+    const tempUrlImage: string[] = [];
+
+    for (const image of file) {
+      tempUrlImage.push(URL.createObjectURL(image))
+    }
+
+    setPreviewImage(tempUrlImage);
+
+  }, [file])
+
+
+  const deleteImagePreview = (positionOfImagePreview: number) => {
+    const copyOfFile = [...file];
+    const filteredFile = copyOfFile.filter((_, index) => index !== positionOfImagePreview);
+    setFile(filteredFile)
+
+  }
+
+ 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Box bgColor='gray.200' minH='100vh'>
+      <Container maxW='container.lg'>
+        <Input ref={inputImageRef} display='none' type="file" onChange={loadImage} multiple />
+        <Button onClick={openFileDialog} >Subir Imagen</Button>
+        {
+          previewImage && previewImage.map((url, index) => (
+            <Box key={index} onClick={() => deleteImagePreview(index)}>
+              <img src={url} alt="previewImage" />
+            </Box>
+          ))
+        }
+      </Container>
+    </Box>
   );
 }
 
