@@ -14,8 +14,8 @@ function App() {
     const { files } = target;
     if (!files?.length) return;
 
-    const fieListToArray = [...Array.from(files!)]
-    setFile(fieListToArray)
+    const fileListToArray = [...Array.from(files!)]
+    setFile(fileListToArray)
   }
 
 
